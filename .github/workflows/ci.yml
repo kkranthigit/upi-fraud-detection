@@ -1,0 +1,53 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate data
+        run: python data/generate_data.py
+
+      - name: Train model
+        run: python src/train.py
+
+      - name: Test API startup
+        run: |
+          python -m uvicorn api.main:app --host 0.0.0.0 --port 8000 &
+          sleep 5
+          curl -f http://localhost:8000/
+
+      - name: Test predict endpoint
+        run: |
+          curl -f -X POST http://localhost:8000/predict \
+          -H "Content-Type: application/json" \
+          -d '{
+            "amount": 85000,
+            "hour": 2,
+            "day_of_week": 6,
+            "merchant_category": "unknown",
+            "device_type": "unknown",
+            "is_new_device": 1,
+            "failed_attempts": 4,
+            "location_mismatch": 1
+          }'
+
+      - name: Build Docker image
+        run: docker build -t upi-fraud-api .
