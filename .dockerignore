@@ -1,5 +1,15 @@
+<<<<<<< HEAD
 data/
 mlruns/
 __pycache__/
 *.pyc
 .git
+=======
+__pycache__/
+*.pyc
+*.pyo
+.git/
+.gitignore
+notebooks/
+*.ipynb
+>>>>>>> 06a43c8d25122e07a969b15b2b80416462b5a840

@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.pyo
+models/
+data/transactions.csv
+.envdata/transactions.csv 
